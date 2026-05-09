@@ -202,4 +202,68 @@ public interface IDeviceService {
 
     void queryPreset(Device device, String channelId, ErrorCallback<List<Preset>> callback);
 
+    /**
+     * 获取设备协议版本
+     * @param deviceId 设备ID
+     * @return 协议版本
+     */
+    String getDeviceProtocolVersion(String deviceId);
+
+    /**
+     * 更新设备协议版本
+     * @param deviceId 设备ID
+     * @param protocolVersion 协议版本
+     */
+    void updateDeviceProtocolVersion(String deviceId, String protocolVersion);
+
+    /**
+     * 查询设备能力集（GB28181-2022）
+     * @param device 设备信息
+     * @param callback 回调
+     */
+    void queryDeviceCapabilities(Device device, ErrorCallback<String> callback);
+
+    /**
+     * 精准PTZ控制（GB28181-2022）
+     * @param device 设备信息
+     * @param channelId 通道ID
+     * @param action PTZ动作
+     * @param parameter 参数
+     * @param callback 回调
+     */
+    void precisionPTZControl(Device device, String channelId, String action, String parameter, ErrorCallback<String> callback);
+
+    /**
+     * 巡航轨迹查询（GB28181-2022）
+     * @param device 设备信息
+     * @param channelId 通道ID
+     * @param callback 回调
+     */
+    void queryCruiseTrack(Device device, String channelId, ErrorCallback<String> callback);
+
+    /**
+     * 存储卡格式化（GB28181-2022）
+     * @param device 设备信息
+     * @param channelId 通道ID
+     * @param callback 回调
+     */
+    void formatStorage(Device device, String channelId, ErrorCallback<String> callback);
+
+    /**
+     * 设备软件升级（GB28181-2022）
+     * @param device 设备信息
+     * @param upgradeUrl 升级地址
+     * @param callback 回调
+     */
+    void deviceUpgrade(Device device, String upgradeUrl, ErrorCallback<String> callback);
+
+    /**
+     * OSD配置（GB28181-2022）
+     * @param device 设备信息
+     * @param channelId 通道ID
+     * @param osdConfig OSD配置
+     * @param callback 回调
+     */
+    void configOSD(Device device, String channelId, String osdConfig, ErrorCallback<String> callback);
+
 }

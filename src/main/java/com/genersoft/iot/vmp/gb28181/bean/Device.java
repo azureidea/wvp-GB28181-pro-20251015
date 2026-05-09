@@ -212,4 +212,52 @@ public class Device {
 
 	@Schema(description = "所属服务Id")
 	private String serverId;
+
+	/**
+	 * 协议版本，支持2011/2016/2022
+	 */
+	@Schema(description = "协议版本，支持2011/2016/2022")
+	private String protocolVersion = "2016";
+
+	/**
+	 * 是否支持精准PTZ控制（GB28181-2022特性）
+	 */
+	@Schema(description = "是否支持精准PTZ控制")
+	private boolean supportPrecisionPTZ = false;
+
+	/**
+	 * 是否支持巡航轨迹（GB28181-2022特性）
+	 */
+	@Schema(description = "是否支持巡航轨迹")
+	private boolean supportCruiseTrack = false;
+
+	/**
+	 * 是否支持录像倒放（GB28181-2022特性）
+	 */
+	@Schema(description = "是否支持录像倒放")
+	private boolean supportReversePlayback = false;
+
+	/**
+	 * 是否支持辅码流（GB28181-2022特性）
+	 */
+	@Schema(description = "是否支持辅码流")
+	private boolean supportAuxiliaryStream = false;
+
+	/**
+	 * 是否支持H.265编码（GB28181-2022特性）
+	 */
+	@Schema(description = "是否支持H.265编码")
+	private boolean supportH265 = true;
+
+	/**
+	 * 是否支持AAC音频（GB28181-2022特性）
+	 */
+	@Schema(description = "是否支持AAC音频")
+	private boolean supportAAC = false;
+
+	/**
+	 * 设备能力集（GB28181-2022新增）
+	 */
+	@Schema(description = "设备能力集")
+	private String deviceCapabilities;
 }

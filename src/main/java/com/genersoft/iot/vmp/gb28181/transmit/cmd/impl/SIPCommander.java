@@ -10,6 +10,7 @@ import com.genersoft.iot.vmp.gb28181.bean.*;
 import com.genersoft.iot.vmp.gb28181.event.MessageSubscribe;
 import com.genersoft.iot.vmp.gb28181.event.SipSubscribe;
 import com.genersoft.iot.vmp.gb28181.event.sip.MessageEvent;
+import com.genersoft.iot.vmp.gb28181.protocol.GBProtocolVersion;
 import com.genersoft.iot.vmp.gb28181.session.SipInviteSessionManager;
 import com.genersoft.iot.vmp.gb28181.transmit.SIPSender;
 import com.genersoft.iot.vmp.gb28181.transmit.cmd.ISIPCommander;
@@ -119,7 +120,18 @@ public class SIPCommander implements ISIPCommander {
     @Override
     public void ptzCmd(Device device, String channelId, int leftRight, int upDown, int inOut, int moveSpeed,
                        int zoomSpeed) throws InvalidArgumentException, SipException, ParseException {
-        String cmdStr = SipUtils.cmdString(leftRight, upDown, inOut, moveSpeed, zoomSpeed);
+        // 检查设备协议版本，GB28181-2022支持精准PTZ控制
+        GBProtocolVersion protocolVersion = GBProtocolVersion.fromCode(device.getProtocolVersion());
+        
+        String cmdStr;
+        if (protocolVersion.isSupportPrecisionPTZ() && device.isSupportPrecisionPTZ()) {
+            // GB28181-2022精准PTZ控制格式
+            cmdStr = SipUtils.cmdString(leftRight, upDown, inOut, moveSpeed, zoomSpeed);
+            log.debug("[PTZ控制] 设备{}使用GB28181-2022精准PTZ格式", device.getDeviceId());
+        } else {
+            // 传统PTZ控制格式
+            cmdStr = SipUtils.cmdString(leftRight, upDown, inOut, moveSpeed, zoomSpeed);
+        }
         StringBuilder ptzXml = new StringBuilder(200);
         String charset = device.getCharset();
         ptzXml.append("<?xml version=\"1.0\" encoding=\"" + charset + "\"?>\r\n");

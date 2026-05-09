@@ -56,6 +56,27 @@
         </template>
       </el-table-column>
       <el-table-column prop="manufacturer" label="厂家" min-width="100" />
+      <el-table-column label="协议版本" min-width="100">
+        <template v-slot:default="scope">
+          <el-tag 
+            v-if="scope.row.protocolVersion === '2022'" 
+            size="small" 
+            type="success"
+            effect="plain"
+          >GB28181-2022</el-tag>
+          <el-tag 
+            v-else-if="scope.row.protocolVersion === '2016'" 
+            size="small"
+            effect="plain"
+          >GB28181-2016</el-tag>
+          <el-tag 
+            v-else-if="scope.row.protocolVersion === '2011'" 
+            size="small"
+            effect="plain"
+          >GB28181-2011</el-tag>
+          <el-tag v-else size="small" type="info">未知</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="流传输模式" min-width="160">
         <template v-slot:default="scope">
           <el-select
