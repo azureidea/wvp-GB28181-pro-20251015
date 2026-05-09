@@ -7,6 +7,7 @@ import com.genersoft.iot.vmp.gb28181.bean.Device;
 import com.genersoft.iot.vmp.gb28181.bean.GbSipDate;
 import com.genersoft.iot.vmp.common.RemoteAddressInfo;
 import com.genersoft.iot.vmp.gb28181.bean.SipTransactionInfo;
+import com.genersoft.iot.vmp.gb28181.protocol.GBProtocolVersion;
 import com.genersoft.iot.vmp.gb28181.service.IDeviceService;
 import com.genersoft.iot.vmp.gb28181.transmit.SIPProcessorObserver;
 import com.genersoft.iot.vmp.gb28181.transmit.SIPSender;
@@ -208,6 +209,12 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
             if (registerFlag) {
                 log.info("[注册成功] deviceId: {}->{}", deviceId, requestAddress);
                 device.setRegisterTime(DateUtil.getNow());
+                
+                // GB28181-2022: 自动识别设备协议版本
+                String protocolVersion = detectProtocolVersion(request, device);
+                device.setProtocolVersion(protocolVersion);
+                log.info("[协议版本识别] 设备{} 协议版本：{}", deviceId, protocolVersion);
+                
                 SipTransactionInfo sipTransactionInfo = new SipTransactionInfo((SIPResponse) response);
                 deviceService.online(device, sipTransactionInfo);
             } else {
@@ -239,5 +246,36 @@ public class RegisterRequestProcessor extends SIPRequestProcessorParent implemen
 
         return response;
 
+    }
+
+    /**
+     * 检测GB28181协议版本
+     * GB28181-2022特征：支持H.265、AAC音频、精准PTZ等
+     */
+    private String detectProtocolVersion(SIPRequest request, Device device) {
+        // 默认返回2016版本（向下兼容）
+        String protocolVersion = "2016";
+        
+        try {
+            // 从User-Agent或Contact头中尝试获取协议版本信息
+            String userAgent = request.getHeader("User-Agent");
+            if (userAgent != null && userAgent.contains("GB28181")) {
+                if (userAgent.contains("2022")) {
+                    protocolVersion = "2022";
+                } else if (userAgent.contains("2011")) {
+                    protocolVersion = "2011";
+                }
+            }
+            
+            // 如果设备之前已设置过协议版本，优先使用历史值
+            if (device.getProtocolVersion() != null && !device.getProtocolVersion().isEmpty()) {
+                protocolVersion = device.getProtocolVersion();
+            }
+            
+        } catch (Exception e) {
+            log.warn("[协议版本识别] 设备{} 识别失败，使用默认版本：{}", device.getDeviceId(), protocolVersion, e);
+        }
+        
+        return protocolVersion;
     }
 }
